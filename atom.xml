@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://www.shemg.cn</id>
-    <title>shemg`blog</title>
-    <updated>2020-03-12T13:02:28.751Z</updated>
+    <title>shemg`s  blog</title>
+    <updated>2020-03-12T14:44:10.692Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://www.shemg.cn"/>
     <link rel="self" href="https://www.shemg.cn/atom.xml"/>
-    <subtitle>温故而知新</subtitle>
+    <subtitle>温故而知新&lt;br&gt;
+本站点涉及Java技术栈、架构、容器、大数据、系统监控、服务器运维等相关技术
+GitHub：https://github.com/ShemgXu&lt;br&gt;（大多数项目都是非公开，所以可见数量不多）&lt;br&gt;&lt;br&gt;
+当前博客数据迁移GitHub Pages中...</subtitle>
     <logo>https://www.shemg.cn/images/avatar.png</logo>
     <icon>https://www.shemg.cn/favicon.ico</icon>
-    <rights>All rights reserved 2020, shemg`blog</rights>
+    <rights>All rights reserved 2020, shemg`s  blog</rights>
     <entry>
         <title type="html"><![CDATA[Hello Gridea]]></title>
         <id>https://www.shemg.cn/post/hello-gridea/</id>
