@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>【容器化】Kubernetes+Docker 容器化集群搭建 | Shemg&#39;s  Blog</title>
-<link rel="shortcut icon" href="https://www.shemg.cn/favicon.ico?v=1584170447209">
+<link rel="shortcut icon" href="https://www.shemg.cn/favicon.ico?v=1584200239017">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://www.shemg.cn/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="【容器化】Kubernetes+Docker 容器化集群搭建 | Shemg&#39;s  Blog - Atom Feed" href="https://www.shemg.cn/atom.xml">
@@ -11,8 +11,12 @@
 
 
 
-    <meta name="description" content="内容迁移中...
-" />
+    <meta name="description" content="一、运行环境说明
+服务器版本：centos7
+Kubernetes版本：v1.10.11
+Docker版本：docker-ce-17.12.1.ce-1.el7.centos
+Kubernetes网络模型：Calico
+容器镜像仓库私服为：..." />
     <meta name="keywords" content="容器" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -22,7 +26,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://www.shemg.cn">
-  <img class="avatar" src="https://www.shemg.cn/images/avatar.png?v=1584170447209" alt="">
+  <img class="avatar" src="https://www.shemg.cn/images/avatar.png?v=1584200239017" alt="">
   </a>
   <h1 class="site-title">
     Shemg&#39;s  Blog
@@ -83,7 +87,7 @@ GitHub：https://github.com/ShemgXu<br>（大多数项目非公开，可见项�
                 2018-10-01
               </span>
               <span>
-                1 min read
+                8 min read
               </span>
               
                 <a href="https://www.shemg.cn/tag/wjXwHyt-t/" class="post-tag">
@@ -94,11 +98,197 @@ GitHub：https://github.com/ShemgXu<br>（大多数项目非公开，可见项�
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <p>内容迁移中...</p>
+                <h2 id="一-运行环境说明">一、运行环境说明</h2>
+<p>服务器版本：centos7<br>
+Kubernetes版本：v1.10.11<br>
+Docker版本：docker-ce-17.12.1.ce-1.el7.centos<br>
+Kubernetes网络模型：Calico<br>
+容器镜像仓库私服为：59.61.92.150:8888，运行脚本时需改为当前环境的仓库</p>
+<h2 id="二-部署kubernetes集群">二、部署Kubernetes集群</h2>
+<p>初始化脚本下载地址：<a href="https://github.com/ShemgXu/k8s-env">https://github.com/ShemgXu/k8s-env</a></p>
+<h3 id="1-脚本说明">1、脚本说明</h3>
+<table>
+<thead>
+<tr>
+<th>脚本</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>init_master.sh</td>
+<td>Kubernetes Master节点初始化脚本</td>
+</tr>
+<tr>
+<td>init_node.sh</td>
+<td>Kubernetes Node节点初始化脚本</td>
+</tr>
+<tr>
+<td>init_register.sh</td>
+<td>Kubernetes 镜像仓库节点初始化脚本（不怎么好用，可用Nexus3或其它替代）</td>
+</tr>
+<tr>
+<td>init_k8s_master_images.sh</td>
+<td>Kubernetes Master节点环境镜像初始化脚本</td>
+</tr>
+<tr>
+<td>init_k8s_node_images.sh</td>
+<td>Kubernetes Node节点环境镜像初始化脚本</td>
+</tr>
+<tr>
+<td>init_register_images</td>
+<td>Kubernetes  镜像仓库节点环境镜像初始化脚本</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-初始化master节点">2、初始化Master节点</h3>
+<p>init_master.sh脚本：</p>
+<pre><code class="language-shell">#!/bin/bash
+#docker镜像仓库地址（修改为自己搭建的镜像仓库）
+register_addr=&quot;59.61.92.150:8888&quot;
+#local_ip=$(ip addr | grep ens | grep inet | awk '{print $2}'|awk -F '/' '{print $1}')
+if [ &quot;$1&quot; = &quot;&quot; ]; then
+	echo &quot;请输入参数1（节点hostname，命名需满足DNS规则，不能包含下划线，不能为localhost)&quot;
+elif [ &quot;$2&quot; = &quot;&quot; ]; then
+	echo &quot;请输入参数2（本机IP）：&quot;
+else
+	local_ip=$2
+    #设置docker和kubernetes安装源
+	chmod -R +x *
+	mkdir -p /data/ent/docker /data/ent/kubernetes
+	cp docker-ce.repo /etc/yum.repos.d
+	cp kubernetes.repo /etc/yum.repos.d
+    #设置主机名
+	hostnamectl --static set-hostname $1
+    #关闭防火墙
+	systemctl disable firewalld.service
+	systemctl stop firewalld.service
+	echo &quot;net.ipv4.ip_forward = 1&quot; &gt; /etc/sysctl.d/k8s.conf
+	sysctl -p /etc/sysctl.d/k8s.conf
+	yum install -y yum-utils device-mapper-persistent-data lvm2 bash-completion
+	yum makecache fast
+    #安装docker
+	yum install -y --setopt=obsoletes=0 docker-ce-17.12.1.ce-1.el7.centos
+    #设置ip转发
+	iptables -P FORWARD ACCEPT
+	sed -i &quot;s#.*ExecStart=/usr/bin/dockerd.*#ExecStart=/usr/bin/dockerd --insecure-registry $register_addr#gi&quot; /usr/lib/systemd/system/docker.service
+	systemctl enable docker &amp;&amp; systemctl start docker
+	swapoff -a
+	sed -i &quot;s#59.61.92.150:8888#$register_addr#&quot; init_k8s_master_images.sh
+	#这里设置自己的镜像仓库私服
+	docker login -u gnwpubdev -p pubdev777 59.61.92.150:8888
+	bash init_k8s_master_images.sh
+    #安装kubernetes、kubeadm和kubectl
+	yum install -y kubernetes-cni-0.6.0 kubelet-1.10.11 kubeadm-1.10.11 kubectl-1.10.11 
+    #设置kubernetes配置文件
+	sed -i &quot;s#--cgroup-driver=systemd#--cgroup-driver=cgroupfs#&quot; /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+	echo 'Environment=&quot;KUBELET_EXTRA_ARGS=--fail-swap-on=false&quot;' &gt;&gt; /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+	systemctl enable kubelet &amp;&amp; systemctl start kubelet 
+    #使用kubeadm初始化
+	kubeadm init --kubernetes-version=v1.10.11 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/16 --apiserver-advertise-address=$local_ip --ignore-preflight-errors=all
+	echo &quot;join command do not forget add this: --ignore-preflight-errors=all&quot;
+	echo &quot;join cluster kubeadm token(ttl 0):&quot; &amp;&amp; kubeadm token create --ttl 0
+	mkdir -p $HOME/.kube
+	cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	chown $(id -u):$(id -g) $HOME/.kube/config
+	#设置calico网络
+	#sed -i 's@.*etcd_endpoints:.*@\ \ etcd_endpoints:\ \&quot;http://'$local_ip':2379\&quot;@gi' calico.yaml
+	sed -i &quot;s#59.61.92.150:8888#$register_addr#&quot; calico/init_calico_images.sh
+	bash calico/init_calico_images.sh
+	kubectl apply -f calico/rbac.yaml
+	kubectl apply -f calico/calico.yaml
+	#设置DNS
+	kubectl create -f dns/kube-dns.yaml
+	#安装heapster监控组件
+	sed -i &quot;s#59.61.92.150:8888#$register_addr#&quot; heapster/k8s-heapster.sh
+	bash heapster/k8s-heapster.sh
+	kubectl create -f heapster/
+	#创建dashboard
+	kubectl apply -f dashboard/kubernetes-dashboard.yaml
+	kubectl create -f dashboard/kubernetes-dashboard-admin.rbac.yaml
+	kubectl patch svc kubernetes-dashboard -p '{&quot;spec&quot;:{&quot;type&quot;:&quot;NodePort&quot;}}' -n kube-system
+	echo &quot;dashboard管理后台地址：&quot;&quot;https://&quot;$local_ip&quot;:&quot;$(kubectl get svc -n kube-system -owide | grep kubernetes-dashboard | awk '{print $5}' | sed 's#443:##' | sed 's#/TCP##')
+	echo &quot;dashboard管理后台登录token：&quot; &amp;&amp; kubectl describe secret | grep token:
+	kubectl create clusterrolebinding --user system:serviceaccount:default:default default-sa-admin --clusterrole cluster-admin	
+	#配置kubectl命令自动补全
+	source /usr/share/bash-completion/bash_completion
+	source &lt;(kubectl completion bash)
+fi
+</code></pre>
+<p>在Master节点运行如下命令进行初始化</p>
+<pre><code class="language-shell">chmod +x init_master.sh 
+bash init_master.sh 节点主机名 本机ip | tee init.log
+</code></pre>
+<p>安装完成后，控制台会输出kubeadm join...的命令，如下所示，保存待node节点初始化后使用，加入kubernetes集群。</p>
+<pre><code class="language-shell">kubeadm join 192.168.245.141:6443 --token i5nul8.r0yvid0o0i6q7fa8 --discovery-token-ca-cert-hash sha256:33b2989161f8e561f70d3be2b515e2a10a6a37e45b2c174818170ee710b0bccc --ignore-preflight-errors=all
+</code></pre>
+<h3 id="3-初始化node节点">3、初始化Node节点</h3>
+<p>init_node.sh脚本：</p>
+<pre><code class="language-shell">#!/bin/bash
+#docker镜像仓库地址（修改为自己搭建的镜像仓库）
+register_addr=&quot;59.61.92.150:8888&quot;
+if [ &quot;$1&quot; = &quot;&quot; ]; then
+	echo &quot;请输入hostname&quot;
+else
+	chmod -R +x *
+	mkdir -p /data/ent/docker /data/ent/kubernetes
+	cp docker-ce.repo /etc/yum.repos.d
+	cp kubernetes.repo /etc/yum.repos.d
+    #设置主机名
+	hostnamectl --static set-hostname $1
+    #关闭防火墙
+	systemctl disable firewalld.service
+	systemctl stop firewalld.service
+	echo &quot;net.ipv4.ip_forward = 1&quot; &gt; /etc/sysctl.d/k8s.conf
+	sysctl -p /etc/sysctl.d/k8s.conf
+	yum install -y yum-utils device-mapper-persistent-data lvm2
+	yum makecache fast
+    #安装docker
+	yum install -y --setopt=obsoletes=0 docker-ce-17.12.1.ce-1.el7.centos
+    #设置ip转发
+	iptables -P FORWARD ACCEPT
+	sed -i &quot;s#.*ExecStart=/usr/bin/dockerd.*#ExecStart=/usr/bin/dockerd --insecure-registry $register_addr#gi&quot; /usr/lib/systemd/system/docker.service
+	systemctl enable docker &amp;&amp; systemctl start docker
+	swapoff -a
+	sed -i &quot;s#59.61.92.150:8888#$register_addr#&quot; init_k8s_node_images.sh
+	#这里设置自己的镜像仓库私服
+	docker login -u gnwpubdev -p pubdev777 59.61.92.150:8888
+	bash init_k8s_node_images.sh
+	sed -i &quot;s#59.61.92.150:8888#$register_addr#&quot; calico/init_calico_images.sh
+	bash calico/init_calico_images.sh
+    #安装kubernetes、kubeadm和kubectl
+	yum install -y kubernetes-cni-0.6.0 kubelet-1.10.11 kubeadm-1.10.11 kubectl-1.10.11
+    #设置kubernetes配置文件
+	sed -i &quot;s#--cgroup-driver=systemd#--cgroup-driver=cgroupfs#&quot; /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+	echo 'Environment=&quot;KUBELET_EXTRA_ARGS=--fail-swap-on=false&quot;' &gt;&gt; /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+	systemctl enable kubelet &amp;&amp; systemctl start kubelet 
+	echo &quot;请输入从master节点初始化得到的join命令：&quot;
+	#kubeadm join 192.168.245.141:6443 --token i5nul8.r0yvid0o0i6q7fa8 --discovery-token-ca-cert-hash sha256:33b2989161f8e561f70d3be2b515e2a10a6a37e45b2c174818170ee710b0bccc --ignore-preflight-errors=all
+fi
+</code></pre>
+<p>在node节点运行如下命令进行初始化</p>
+<pre><code class="language-shell">chmod +x init_node.sh
+bash init_node.sh 节点主机名 | tee init.log
+</code></pre>
+<p>安装完成后，运行初始化Master后保存的kubeadm join命令，加入集群。</p>
 
               </div>
               <div class="toc-container">
-                
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E4%B8%80-%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83%E8%AF%B4%E6%98%8E">一、运行环境说明</a></li>
+<li><a href="#%E4%BA%8C-%E9%83%A8%E7%BD%B2kubernetes%E9%9B%86%E7%BE%A4">二、部署Kubernetes集群</a>
+<ul>
+<li><a href="#1-%E8%84%9A%E6%9C%AC%E8%AF%B4%E6%98%8E">1、脚本说明</a></li>
+<li><a href="#2-%E5%88%9D%E5%A7%8B%E5%8C%96master%E8%8A%82%E7%82%B9">2、初始化Master节点</a></li>
+<li><a href="#3-%E5%88%9D%E5%A7%8B%E5%8C%96node%E8%8A%82%E7%82%B9">3、初始化Node节点</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
               </div>
             </div>
           </article>
@@ -118,7 +308,16 @@ GitHub：https://github.com/ShemgXu<br>（大多数项目非公开，可见项�
         
 
         <div class="site-footer">
-  
+  <script type="text/javascript" src="https://s4.cnzz.com/z_stat.php?id=1278685049&web_id=1278685049"></script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?f76749df0753a5ac0b5dcd5a945dd265";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
   <a class="rss" href="https://www.shemg.cn/atom.xml" target="_blank">
     <i class="ri-rss-line"></i> RSS
   </a>
