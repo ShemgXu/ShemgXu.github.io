@@ -1,83 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://www.shemg.cn</id>
+    <id>https://shemg.cn</id>
     <title>Shemg&apos;s  Blog</title>
-    <updated>2020-03-14T06:26:41.834Z</updated>
+    <updated>2020-03-14T07:07:53.443Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://www.shemg.cn"/>
-    <link rel="self" href="https://www.shemg.cn/atom.xml"/>
+    <link rel="alternate" href="https://shemg.cn"/>
+    <link rel="self" href="https://shemg.cn/atom.xml"/>
     <subtitle>本站点涉及前后端开发、Java技术栈、分布式架构、容器化、自动化、大数据、系统监控、服务器运维等技术分享&lt;br&gt;
 GitHub：https://github.com/ShemgXu&lt;br&gt;（大多数项目非公开，可见项目不多）</subtitle>
-    <logo>https://www.shemg.cn/images/avatar.png</logo>
-    <icon>https://www.shemg.cn/favicon.ico</icon>
+    <logo>https://shemg.cn/images/avatar.png</logo>
+    <icon>https://shemg.cn/favicon.ico</icon>
     <rights>All rights reserved 2020, Shemg&apos;s  Blog</rights>
     <entry>
         <title type="html"><![CDATA[【大数据】Hadoop集群环境搭建]]></title>
-        <id>https://www.shemg.cn/post/uEbu5zRgW/</id>
-        <link href="https://www.shemg.cn/post/uEbu5zRgW/">
+        <id>https://shemg.cn/post/uEbu5zRgW/</id>
+        <link href="https://shemg.cn/post/uEbu5zRgW/">
         </link>
         <updated>2020-03-14T05:59:48.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[Ngrok实现内网穿透]]></title>
-        <id>https://www.shemg.cn/post/GD4jQoZN1/</id>
-        <link href="https://www.shemg.cn/post/GD4jQoZN1/">
+        <id>https://shemg.cn/post/GD4jQoZN1/</id>
+        <link href="https://shemg.cn/post/GD4jQoZN1/">
         </link>
         <updated>2019-07-12T09:23:10.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[【容器化】Kubernetes借助OpenVPN打通本地和集群内网]]></title>
-        <id>https://www.shemg.cn/post/2t1NGb37v/</id>
-        <link href="https://www.shemg.cn/post/2t1NGb37v/">
+        <id>https://shemg.cn/post/2t1NGb37v/</id>
+        <link href="https://shemg.cn/post/2t1NGb37v/">
         </link>
         <updated>2019-05-08T14:27:08.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[分布式系统架构设计（微服务化、容器化、自动化）]]></title>
-        <id>https://www.shemg.cn/post/fen-bu-shi-jia-gou-wei-fu-wu-hua-rong-qi-hua-zi-dong-hua/</id>
-        <link href="https://www.shemg.cn/post/fen-bu-shi-jia-gou-wei-fu-wu-hua-rong-qi-hua-zi-dong-hua/">
+        <id>https://shemg.cn/post/fen-bu-shi-jia-gou-wei-fu-wu-hua-rong-qi-hua-zi-dong-hua/</id>
+        <link href="https://shemg.cn/post/fen-bu-shi-jia-gou-wei-fu-wu-hua-rong-qi-hua-zi-dong-hua/">
         </link>
         <updated>2019-05-01T14:54:03.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[【第三方推送】IOS-MDM推送]]></title>
-        <id>https://www.shemg.cn/post/CauaqWsjq/</id>
-        <link href="https://www.shemg.cn/post/CauaqWsjq/">
+        <id>https://shemg.cn/post/CauaqWsjq/</id>
+        <link href="https://shemg.cn/post/CauaqWsjq/">
         </link>
         <updated>2019-04-11T06:09:51.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[【第三方支付】苹果支付开发对接]]></title>
-        <id>https://www.shemg.cn/post/7tncFOggm/</id>
-        <link href="https://www.shemg.cn/post/7tncFOggm/">
+        <id>https://shemg.cn/post/7tncFOggm/</id>
+        <link href="https://shemg.cn/post/7tncFOggm/">
         </link>
         <updated>2019-03-17T06:24:06.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[【第三方支付】支付宝支付开发对接]]></title>
-        <id>https://www.shemg.cn/post/J_zsK4Nr5/</id>
-        <link href="https://www.shemg.cn/post/J_zsK4Nr5/">
+        <id>https://shemg.cn/post/J_zsK4Nr5/</id>
+        <link href="https://shemg.cn/post/J_zsK4Nr5/">
         </link>
         <updated>2019-03-16T06:23:36.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[【第三方支付】微信支付开发对接]]></title>
-        <id>https://www.shemg.cn/post/Q_5fcKrF4/</id>
-        <link href="https://www.shemg.cn/post/Q_5fcKrF4/">
+        <id>https://shemg.cn/post/Q_5fcKrF4/</id>
+        <link href="https://shemg.cn/post/Q_5fcKrF4/">
         </link>
         <updated>2019-03-15T06:01:53.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[Centos7搭建Nexus3(Docker镜像仓库&Maven私服&Npm私服)]]></title>
-        <id>https://www.shemg.cn/post/PPOQw-xEp/</id>
-        <link href="https://www.shemg.cn/post/PPOQw-xEp/">
+        <id>https://shemg.cn/post/PPOQw-xEp/</id>
+        <link href="https://shemg.cn/post/PPOQw-xEp/">
         </link>
         <updated>2018-10-09T05:46:58.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[【容器化】Kubernetes+Docker 容器化集群搭建]]></title>
-        <id>https://www.shemg.cn/post/hAS5StZj5/</id>
-        <link href="https://www.shemg.cn/post/hAS5StZj5/">
+        <id>https://shemg.cn/post/hAS5StZj5/</id>
+        <link href="https://shemg.cn/post/hAS5StZj5/">
         </link>
         <updated>2018-10-01T10:47:40.000Z</updated>
     </entry>
