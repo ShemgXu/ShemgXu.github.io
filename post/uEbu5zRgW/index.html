@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>【大数据】Hadoop集群环境搭建 | Shemg&#39;s  Blog</title>
-<link rel="shortcut icon" href="https://www.shemg.cn/favicon.ico?v=1584200239017">
+<link rel="shortcut icon" href="https://www.shemg.cn/favicon.ico?v=1584276043707">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://www.shemg.cn/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="【大数据】Hadoop集群环境搭建 | Shemg&#39;s  Blog - Atom Feed" href="https://www.shemg.cn/atom.xml">
@@ -11,8 +11,34 @@
 
 
 
-    <meta name="description" content="内容迁移中...
-" />
+    <meta name="description" content="一、环境说明：
+
+
+
+组件
+版本
+
+
+
+
+Java
+Oracle-JDK 1.8
+
+
+Hadoop
+2.10.0
+
+
+Zookeeper
+3.5.7
+
+
+Spark
+spark-2.4.4-bin-hadoop2.7
+
+
+HBase
+2.2..." />
     <meta name="keywords" content="大数据" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -22,7 +48,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://www.shemg.cn">
-  <img class="avatar" src="https://www.shemg.cn/images/avatar.png?v=1584200239017" alt="">
+  <img class="avatar" src="https://www.shemg.cn/images/avatar.png?v=1584276043707" alt="">
   </a>
   <h1 class="site-title">
     Shemg&#39;s  Blog
@@ -80,10 +106,10 @@ GitHub：https://github.com/ShemgXu<br>（大多数项目非公开，可见项�
             </h2>
             <div class="post-info">
               <span>
-                2020-03-14
+                2020-01-02
               </span>
               <span>
-                1 min read
+                11 min read
               </span>
               
                 <a href="https://www.shemg.cn/tag/aRzxFFnTU/" class="post-tag">
@@ -94,11 +120,382 @@ GitHub：https://github.com/ShemgXu<br>（大多数项目非公开，可见项�
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <p>内容迁移中...</p>
+                <h2 id="一-环境说明">一、环境说明：</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">组件</th>
+<th style="text-align:left">版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Java</td>
+<td style="text-align:left">Oracle-JDK 1.8</td>
+</tr>
+<tr>
+<td style="text-align:left">Hadoop</td>
+<td style="text-align:left">2.10.0</td>
+</tr>
+<tr>
+<td style="text-align:left">Zookeeper</td>
+<td style="text-align:left">3.5.7</td>
+</tr>
+<tr>
+<td style="text-align:left">Spark</td>
+<td style="text-align:left">spark-2.4.4-bin-hadoop2.7</td>
+</tr>
+<tr>
+<td style="text-align:left">HBase</td>
+<td style="text-align:left">2.2.3</td>
+</tr>
+<tr>
+<td style="text-align:left">Hive</td>
+<td style="text-align:left">3.1.2</td>
+</tr>
+</tbody>
+</table>
+<p>三台centos7服务器，配置如下</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">服务器</th>
+<th style="text-align:left">配置</th>
+<th style="text-align:left">IP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Master</td>
+<td style="text-align:left">4核CPU、3G内存</td>
+<td style="text-align:left">192.168.254.137</td>
+</tr>
+<tr>
+<td style="text-align:left">Slave1</td>
+<td style="text-align:left">4核CPU、3G内存</td>
+<td style="text-align:left">192.168.254.140</td>
+</tr>
+<tr>
+<td style="text-align:left">Slave2</td>
+<td style="text-align:left">4核CPU、3G内存</td>
+<td style="text-align:left">192.168.254.139</td>
+</tr>
+</tbody>
+</table>
+<h2 id="二-安装jdk">二、安装JDK</h2>
+<p>1.解压jdk1.8.0_131.tar.gz至/data/ent/java<br>
+2.配置环境变量（vim /etc/profile）添加以下信息：</p>
+<pre><code class="language-shell">export JAVA_HOME=/data/ent/java/jdk1.8.0_131
+export JRE_HOME=/data/ent/java/jdk1.8.0_131
+export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH
+export CLASSPATH=$CLASSPATH:.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+</code></pre>
+<p>3.验证是否安装成功<br>
+. /etc/profile ; java -version</p>
+<h2 id="三-安装hadoop">三、	安装hadoop</h2>
+<h3 id="1解压hadoop-2100targz至dataenthadoop">1.	解压hadoop-2.10.0.tar.gz至/data/ent/hadoop</h3>
+<h3 id="2配置环境变量vim-etcprofile添加以下信息">2.	配置环境变量（vim /etc/profile）添加以下信息：</h3>
+<pre><code class="language-shell">export HADOOP_HOME=/data/ent/hadoop/hadoop-2.10.0
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+</code></pre>
+<h3 id="3验证是否安装成功">3.	验证是否安装成功</h3>
+<pre><code class="language-shell">. /etc/profile ; hadoop version
+</code></pre>
+<h3 id="4hadoop集群搭建">4.	Hadoop集群搭建</h3>
+<p>4.1每个节点均配置如下机器名</p>
+<p>每台机器关闭防火墙</p>
+<pre><code class="language-shell">systemctl disable firewalld.service ; systemctl stop firewalld.service
+</code></pre>
+<p>分别设置主机名：</p>
+<pre><code class="language-shell">hostnamectl --static set-hostname master
+hostnamectl --static set-hostname slave1
+hostnamectl --static set-hostname slave2
+</code></pre>
+<p>vim /etc/hosts追加以下配置</p>
+<pre><code class="language-shell">192.168.254.137 master
+192.168.254.140 slave1
+192.168.254.139 slave2
+</code></pre>
+<p>4.2 对master配置节点ssh免密登录</p>
+<pre><code class="language-shell">ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+ssh-copy-id master
+ssh-copy-id slave1
+ssh-copy-id slave2
+</code></pre>
+<p>4.3	配置文件设置<br>
+每台机器，${HADOOP_HOME}/etc/hadoop/hadoop-env.sh文件最后添加</p>
+<pre><code class="language-shell">export JAVA_HOME=/data/ent/java/jdk1.8.0_131 #java路径一定要配，hadoop不会去读/etc/profile里面的java配置
+export HDFS_NAMENODE_USER=root #以哪个用户启动HDFS NAMENODE 
+export HDFS_DATANODE_USER=root  #以哪个用户启动HDFS DATANODE 
+export HDFS_SECONDARYNAMENODE_USER=root #以哪个用户启动HDFS SECONDARYNAMENODE
+</code></pre>
+<p>每台机器， ${HADOOP_HOME}/etc/hadoop/core-site.xml编辑为如下信息：</p>
+<pre><code class="language-xml">&lt;configuration&gt;
+	&lt;!-- 默认情况下是在tmp目录，重启数据就会丢失 --&gt; 
+	&lt;property&gt; 
+		&lt;name&gt;hadoop.tmp.dir&lt;/name&gt; 
+		&lt;value&gt;/var/lib/hadoop&lt;/value&gt; 
+	&lt;/property&gt; 
+	&lt;!-- 默认文件系统 --&gt; 
+	&lt;property&gt; 
+		&lt;name&gt;fs.defaultFS&lt;/name&gt; 
+		&lt;value&gt;hdfs://master:9000&lt;/value&gt; 
+	&lt;/property&gt; 
+&lt;/configuration&gt;
+</code></pre>
+<p>每台机器，${HADOOP_HOME}/etc/hadoop/hdfs-site.xml编辑为如下信息</p>
+<pre><code class="language-xml">&lt;configuration&gt;
+    &lt;!--hdfs副本数--&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.replication&lt;/name&gt;
+        &lt;value&gt;1&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+<p>每台机器，${HADOOP_HOME}/etc/hadoop/yarn-site.xml编辑为如下信息</p>
+<pre><code class="language-xml">&lt;configuration&gt;
+	  &lt;!-- Site specific YARN configuration properties --&gt;
+    &lt;!-- 配置运行资源管理器的主机名 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.hostname&lt;/name&gt;
+        &lt;value&gt;master&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 配置运行资源管理器的RPC服务器的主机名和端口 --&gt;
+    &lt;!-- 
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.address&lt;/name&gt;
+        &lt;value&gt;master:8032&lt;/value&gt;
+    &lt;/property&gt;
+     --&gt;
+    &lt;!-- 节点管理器运行的附加服务列表 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;
+        &lt;value&gt;mapreduce_shuffle&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 配置节点管理器分配给容器的物理内存容量 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.resource.memory-mb&lt;/name&gt;
+        &lt;value&gt;2048&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 配置节点管理器分配给容器的核数量 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.resource.cpu-vcores&lt;/name&gt;
+        &lt;value&gt;4&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+<p>每台机器，${HADOOP_HOME}/etc/hadoop/mapred-site.xml编辑为如下信息</p>
+<pre><code class="language-shell">cp ${HADOOP_HOME}/etc/hadoop/mapred-site.xml.template ${HADOOP_HOME}/etc/hadoop/mapred-site.xml
+</code></pre>
+<pre><code class="language-xml">&lt;configuration&gt;
+    &lt;property&gt;
+        &lt;name&gt;mapreduce.framework.name&lt;/name&gt;
+        &lt;value&gt;yarn&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+<p>每台机器，${HADOOP_HOME}/etc/hadoop/slaves编辑为如下信息</p>
+<pre><code class="language-shell">slave1
+slave2
+</code></pre>
+<p>4.4	master启动HDFS和YARN</p>
+<pre><code class="language-shell">cd ${HADOOP_HOME}/sbin
+hdfs namenode -format #初始化hdfs，如果重启集群以前数据还在，就不用再初始化，直接运行下一条命令
+start-dfs.sh
+start-yarn.sh
+mr-jobhistory-daemon.sh start historyserver
+</code></pre>
+<p>4.5	检查是否安装成功（每台机器运行jps，正常显示如下）<br>
+mster: NameNode,Secondary NameNode,ResourceManager, JobHistoryServer<br>
+slave1: DataNode,NodeManager<br>
+slave2: DataNode,NodeManager<br>
+4.6	WEB端管理后台<br>
+Hadoop2.x的namenode界面访问端口默认是：50070<br>
+Hadoop3.x的namenode界面访问端口默认是：9870</p>
+<p>Namenode管理地址：http://192.168.254.137:50070<br>
+ResourceManager管理地址：http://192.168.254.137:8088<br>
+4.7	样例运行</p>
+<pre><code class="language-shell">cd ${HADOOP_HOME}
+bin/hdfs dfs -mkdir /user
+bin/hdfs dfs -mkdir /user/root
+bin/hdfs dfs -mkdir input
+bin/hdfs dfs -put etc/hadoop/*.xml input
+bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.10.0.jar grep input output 'dfs[a-z.]+'
+bin/hdfs dfs -get output output
+cat output/*
+</code></pre>
+<h2 id="四-安装zookeeper">四、	安装Zookeeper</h2>
+<h3 id="1解压apache-zookeeper-357-bintargz至dataentzookeeper">1.解压apache-zookeeper-3.5.7-bin.tar.gz至/data/ent/zookeeper</h3>
+<h3 id="2配置环境变量vim-etcprofile添加以下信息-2">2.配置环境变量（vim /etc/profile）添加以下信息：</h3>
+<pre><code class="language-shell">export ZK_HOME=/data/ent/zookeeper/apache-zookeeper-3.5.7-bin
+export PATH=$PATH:$ZK_HOME/bin
+</code></pre>
+<h3 id="3添加配置文件">3.添加配置文件</h3>
+<p>3.1 在$ZK_HOME /conf添加zoo.cfg文件</p>
+<pre><code class="language-shell">cp zoo_sample.cfg zoo.cfg
+</code></pre>
+<p>3.2修改以下信息：</p>
+<pre><code class="language-shell">dataDir=/data/ent/zookeeper/ apache-zookeeper-3.5.7-bin/data
+dataLogDir=/data/ent/zookeeper/apache-zookeeper-3.5.7-bin/logs
+server.0=master:2888:3888
+server.1=slave1:2888:3888
+server.2=slave2:2888:3888
+</code></pre>
+<p>3.3创建data和logs目录</p>
+<pre><code class="language-shell">mkdir -p /data/ent/zookeeper/apache-zookeeper-3.5.7-bin/data
+mkdir -p /data/ent/zookeeper/apache-zookeeper-3.5.7-bin/logs
+</code></pre>
+<p>3.4 data目录下新建myid文件</p>
+<pre><code class="language-shell">echo 0 &gt; $ZK_HOME/data/myid			#master机器执行
+echo 1 &gt; $ZK_HOME/data/myid			#slave1机器执行
+echo 2 &gt; $ZK_HOME/data/myid			#slave2机器执行
+</code></pre>
+<p>4.启动</p>
+<pre><code class="language-shell">. /etc/profile ; /data/ent/zookeeper/apache-zookeeper-3.5.7-bin/bin/zkServer.sh start
+</code></pre>
+<p>5.验证是否安装成功</p>
+<pre><code class="language-shell">/data/ent/zookeeper/apache-zookeeper-3.5.7-bin/bin/zkServer.sh status
+</code></pre>
+<p>6.安装zkui<br>
+将zkui文件夹复制至master的/data/ent/zookeeper/zkui<br>
+运行start.sh启动zkui</p>
+<pre><code class="language-shell">(配置appconfig
+cd /data/ent/zookeeper/apache-zookeeper-3.5.7-bin/bin
+zkCli.sh -server master:2181,slave1:2181,slave2:2181
+create /appconfig &quot;my appconfig&quot;
+create /appconfig/hosts 192.168.254.137)
+</code></pre>
+<h2 id="五-安装spark">五、安装Spark</h2>
+<h3 id="1解压spark-244-bin-hadoop27tgz至dataentspark">1.解压spark-2.4.4-bin-hadoop2.7.tgz至/data/ent/spark</h3>
+<h3 id="2配置环境变量vim-etcprofile添加以下信息-3">2.配置环境变量（vim /etc/profile）添加以下信息：</h3>
+<pre><code class="language-shell">export SPARK_HOME=/data/ent/spark/spark-2.4.4-bin-hadoop2.7
+export PATH=$PATH:$SPARK_HOME/bin
+export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
+</code></pre>
+<h3 id="3-各节点配置文件保存至spark_homeconf">3. 各节点配置文件保存至$SPARK_HOME/conf</h3>
+<h3 id="4验证是否安装成功">4.验证是否安装成功</h3>
+<p>【两个master(master和slave1)，两个workder(slave1,slave2)】<br>
+master节点运行：</p>
+<pre><code class="language-shell">. /etc/profile ; /data/ent/spark/spark-2.4.4-bin-hadoop2.7/sbin/start-all.sh
+</code></pre>
+<p>slave1节点运行：</p>
+<pre><code class="language-shell">. /etc/profile ; /data/ent/spark/spark-2.4.4-bin-hadoop2.7/sbin/start-master.sh
+</code></pre>
+<p><code>【备注】</code><br>
+<code>1.当要是用yarn资源管理器时，不需要启动${SPARK_HOME}/sbin/start-all.sh，只需要启动${HADOOP_HOME}/sbin/start-yarn.sh即可，运行spark任务是用： spark-shell/spark-submit --master yarn --deploy-mode client/cluster即可</code><br>
+<code>2.当要使用spark自带的standlone或者local模式运行，则需要启动${SPARK_HOME} /sbin/start-all.sh</code></p>
+<p><code>当${SPARK_HOME}/sbin/start-all.sh和${HADOOP_HOME}/sbin/start-yarn.sh都启动时，任务到底在通过哪个资源管理器进行管理运行，则要看提交任务的方式，如：</code><br>
+<code>1&gt;spark-shell/spark-submit --master yarn --deploy-mode client/cluster //spark on yarn</code><br>
+<code>2&gt;spark-shell/spark-submit --master spark://master:7077 //standlone</code><br>
+<code>3&gt;spark-shell/spark-submit --master local[*] 			 //本地模式</code></p>
+<h3 id="5spark-web-ui">5.spark web ui</h3>
+<p>http://master:8080/<br>
+http://slave1:8080/</p>
+<h3 id="6运行命令">6.运行命令</h3>
+<pre><code class="language-shell">// yarn集群模式
+spark-shell/spark-submit --master yarn --deploy-mode client/cluster
+//standlone集群模式
+spark-shell/spark-submit  --master spark://master:7077
+//本地模式（用于测试）
+spark-shell/spark-submit  --master local[*]
+</code></pre>
+<p>【备注】spark-shell/spark-submit二选一，client/cluster二选一，例子：</p>
+<pre><code class="language-shell">root@hdp1 /mnt]#spark-submit --class org.apache.spark.examples.SparkPi --master yarn --deploy-mode cluster --driver-memory 2g --executor-memory 1g --executor-cores 1 --queue thequeue /mnt/software/spark-2.2.0-bin-hadoop2.6/examples/jars/spark-examples*.jar 10
+</code></pre>
+<h3 id="六-安装hbase">六、安装HBase</h3>
+<h3 id="1解压hbase-223-bintargz至dataenthbase">1.解压hbase-2.2.3-bin.tar.gz至/data/ent/hbase</h3>
+<h3 id="2配置环境变量vim-etcprofile添加以下信息-4">2.配置环境变量（vim /etc/profile）添加以下信息：</h3>
+<pre><code class="language-shell">export HBASE_HOME=/data/ent/hbase/hbase-2.2.3
+export PATH=$PATH:$HBASE_HOME/bin
+</code></pre>
+<h3 id="3验证是否安装成功-2">3.验证是否安装成功</h3>
+<pre><code class="language-shell">. /etc/profile ; hbase shell
+</code></pre>
+<h3 id="4hbase集群搭建">4.HBase集群搭建</h3>
+<p>4.1配置文件保存至各个节点$HBASE_HOME/conf<br>
+4.2 运行</p>
+<pre><code class="language-shell">cd $HBASE_HOME/bin
+./start-hbase.sh
+</code></pre>
+<p>4.3 Master Web UI</p>
+<pre><code>http://master:16010/master-status
+</code></pre>
+<p>4.4 运行hbase shell命令行操作hbase</p>
+<h2 id="七-安装hive">七、安装Hive</h2>
+<h3 id="1解压apache-hive-312-bintargz至dataenthive">1.解压apache-hive-3.1.2-bin.tar.gz至/data/ent/hive</h3>
+<h3 id="2配置环境变量vim-etcprofile添加以下信息-5">2.配置环境变量（vim /etc/profile）添加以下信息：</h3>
+<pre><code class="language-shell">export HIVE_HOME=/data/ent/hive/apache-hive-3.1.2-bin
+export PATH=$PATH:$HIVE_HOME/bin
+export CLASSPATH=$CLASSPATH:$HIVE_HOME/bin
+</code></pre>
+<h3 id="3验证是否安装成功-3">3.验证是否安装成功</h3>
+<pre><code class="language-shell">. /etc/profile ; hive --version
+</code></pre>
+<h3 id="4hive集群搭建">4.Hive集群搭建</h3>
+<p>4.1 mysql创建hive数据库和hive用户，例如：</p>
+<pre><code>create database hive default charset utf8 collate utf8_general_ci;
+create user 'hive'@'%' identified by '123456';
+grant all privileges on hive.* to 'hive'@'%' identified by '123456';
+flush privileges;
+</code></pre>
+<p>4.2将配置文件传至$HIVE_HOME/conf<br>
+4.3初始化hive</p>
+<pre><code class="language-shell">cd /data/ent/hive/apache-hive-3.1.2-bin/bin
+schematool -dbType mysql -initSchema
+</code></pre>
+<p>4.4 启动hive</p>
+<pre><code class="language-shell">hive
+</code></pre>
 
               </div>
               <div class="toc-container">
-                
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E4%B8%80-%E7%8E%AF%E5%A2%83%E8%AF%B4%E6%98%8E">一、环境说明：</a></li>
+<li><a href="#%E4%BA%8C-%E5%AE%89%E8%A3%85jdk">二、安装JDK</a></li>
+<li><a href="#%E4%B8%89-%E5%AE%89%E8%A3%85hadoop">三、	安装hadoop</a>
+<ul>
+<li><a href="#1%E8%A7%A3%E5%8E%8Bhadoop-2100targz%E8%87%B3dataenthadoop">1.	解压hadoop-2.10.0.tar.gz至/data/ent/hadoop</a></li>
+<li><a href="#2%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8Fvim-etcprofile%E6%B7%BB%E5%8A%A0%E4%BB%A5%E4%B8%8B%E4%BF%A1%E6%81%AF">2.	配置环境变量（vim /etc/profile）添加以下信息：</a></li>
+<li><a href="#3%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F">3.	验证是否安装成功</a></li>
+<li><a href="#4hadoop%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA">4.	Hadoop集群搭建</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9B%9B-%E5%AE%89%E8%A3%85zookeeper">四、	安装Zookeeper</a>
+<ul>
+<li><a href="#1%E8%A7%A3%E5%8E%8Bapache-zookeeper-357-bintargz%E8%87%B3dataentzookeeper">1.解压apache-zookeeper-3.5.7-bin.tar.gz至/data/ent/zookeeper</a></li>
+<li><a href="#2%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8Fvim-etcprofile%E6%B7%BB%E5%8A%A0%E4%BB%A5%E4%B8%8B%E4%BF%A1%E6%81%AF-2">2.配置环境变量（vim /etc/profile）添加以下信息：</a></li>
+<li><a href="#3%E6%B7%BB%E5%8A%A0%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">3.添加配置文件</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%94-%E5%AE%89%E8%A3%85spark">五、安装Spark</a>
+<ul>
+<li><a href="#1%E8%A7%A3%E5%8E%8Bspark-244-bin-hadoop27tgz%E8%87%B3dataentspark">1.解压spark-2.4.4-bin-hadoop2.7.tgz至/data/ent/spark</a></li>
+<li><a href="#2%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8Fvim-etcprofile%E6%B7%BB%E5%8A%A0%E4%BB%A5%E4%B8%8B%E4%BF%A1%E6%81%AF-3">2.配置环境变量（vim /etc/profile）添加以下信息：</a></li>
+<li><a href="#3-%E5%90%84%E8%8A%82%E7%82%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%BF%9D%E5%AD%98%E8%87%B3spark_homeconf">3. 各节点配置文件保存至$SPARK_HOME/conf</a></li>
+<li><a href="#4%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F">4.验证是否安装成功</a></li>
+<li><a href="#5spark-web-ui">5.spark web ui</a></li>
+<li><a href="#6%E8%BF%90%E8%A1%8C%E5%91%BD%E4%BB%A4">6.运行命令</a></li>
+<li><a href="#%E5%85%AD-%E5%AE%89%E8%A3%85hbase">六、安装HBase</a></li>
+<li><a href="#1%E8%A7%A3%E5%8E%8Bhbase-223-bintargz%E8%87%B3dataenthbase">1.解压hbase-2.2.3-bin.tar.gz至/data/ent/hbase</a></li>
+<li><a href="#2%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8Fvim-etcprofile%E6%B7%BB%E5%8A%A0%E4%BB%A5%E4%B8%8B%E4%BF%A1%E6%81%AF-4">2.配置环境变量（vim /etc/profile）添加以下信息：</a></li>
+<li><a href="#3%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F-2">3.验证是否安装成功</a></li>
+<li><a href="#4hbase%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA">4.HBase集群搭建</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%83-%E5%AE%89%E8%A3%85hive">七、安装Hive</a>
+<ul>
+<li><a href="#1%E8%A7%A3%E5%8E%8Bapache-hive-312-bintargz%E8%87%B3dataenthive">1.解压apache-hive-3.1.2-bin.tar.gz至/data/ent/hive</a></li>
+<li><a href="#2%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8Fvim-etcprofile%E6%B7%BB%E5%8A%A0%E4%BB%A5%E4%B8%8B%E4%BF%A1%E6%81%AF-5">2.配置环境变量（vim /etc/profile）添加以下信息：</a></li>
+<li><a href="#3%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F-3">3.验证是否安装成功</a></li>
+<li><a href="#4hive%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA">4.Hive集群搭建</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
               </div>
             </div>
           </article>
